@@ -10,23 +10,38 @@ import easygui
 import sys
 import clipboard
 
-driver = webdriver.Chrome()
 
-xPath = easygui.diropenbox("Izaberi folder sa oglasom", "FOLDER", "C:\\")
-exPath = xPath + "\\main.xlsx"
+xPath = easygui.diropenbox("Izaberi folder sa oglasom", "FOLDER", "D:\\GIT_PROJEKTI\\")
+
 
 
 keyboard = Controller()
 #
+try:
+    exPath = xPath + "\\main.xlsx"
+    excel = xlrd.open_workbook(exPath)
+except FileNotFoundError or TypeError:
+    print("NETACAN FOLDER")
+    easygui.msgbox("NETACAN FOLDER, GASIM", "ERROR")
+    sys.exit()
 
+
+driver = webdriver.Chrome()
+
+
+
+# options = webdriver.ChromeOptions()
+# options.add_argument("user-data-dir=C:\\Users\\stakic\\AppData\\Local\\Google\\Chrome\\User%20Data") #Path to your chrome profile
+# driver = webdriver.Chrome(chrome_options=options)
 # keyboard.press(Key.f11)
-# keyboard.release(Key.f11)
-
+# # keyboard.release(Key.f11)
 
 #funkcija za interval
 def interval(second=0.8):
     time.sleep(second)
-
+def dugmeSledece():
+    pDugmeSledece = driver.find_element_by_xpath("//input[@action-name='adInfoNextButton']")
+    driver.execute_script("arguments[0].click();", pDugmeSledece)
 
 driver.get('https://www.kupujemprodajem.com/user.php?action=login&return_url=MTM4MjExOTEx')
 email = driver.find_element_by_name("data[email]")
@@ -40,13 +55,6 @@ password.send_keys(Keys.ENTER)
 interval()
 
 
-try:
-    excel = xlrd.open_workbook(exPath)
-except FileNotFoundError:
-    print("NETACAN FOLDER")
-    driver.close()
-    easygui.msgbox("NETACAN FOLDER, GASIM", "ERROR")
-    sys.exit()
 
 #ucitaj excel sheet
 excelSheet = excel.sheet_by_index(0)
@@ -163,6 +171,7 @@ interval()
 clipboard.copy(vOpis)
 pOpis = driver.find_element_by_xpath("//iframe[@id='data[description]_ifr']")
 pOpis.click()
+interval()
 with keyboard.pressed(Key.ctrl):
     keyboard.press('v')
 interval()
@@ -172,26 +181,30 @@ interval()
 #IZABERI GRAD I TELEFON
 telefon = "0616344878"
 ime = "Nikola Radisic"
-# pGrad = driver.find_element_by_xpath(("//div[@action-name='choice-options-insert']"))
-# pGrad = driver.find_element_by_class_name("uiMenuButtonInner")
-# pGrad = driver.find_element_by_xpath("//span[contains(text(),'Izaberite')]")
+
 pGrad = driver.find_element_by_id("locationInsertSpot")
-driver.execute_script("arguments[0].click();", pGrad)
 pGrad.click()
 interval()
-# grad = driver.find_element_by_xpath("//div[@data-value='1']")
+grad = driver.find_element_by_xpath("//div[@data-text='Beograd']")
+driver.execute_script("arguments[0].click();", grad)
+interval()
 
-# interval()
-# pBroj = driver.find_element_by_id("phone_number")
-# pBroj.send_keys(telefon)
-# interval()
-# pIme = driver.find_element_by_id("data[owner]")
-# pIme.send_keys(ime)
-# interval()
-#
-# pDugmeSledece = driver.find_element_by_xpath("//input[@action-name='adInfoNextButton']")
-# driver.execute_script("arguments[0].click();", pDugmeSledece)
+pIme = driver.find_element_by_id("data[owner]")
+pIme.clear()
+pIme.send_keys(ime)
 
+interval()
+pBroj = driver.find_element_by_id("phone_number")
+pBroj.send_keys(telefon)
+dugmeSledece()
+interval(1)
+
+pVidljivost = driver.find_element_by_xpath("//div[text()='Standardna vidljivost']")
+pVidljivost.click()
+print("yes")
+
+interval(10)
+driver.close()
 
 
 # time.sleep(5)
