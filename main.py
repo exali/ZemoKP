@@ -8,16 +8,19 @@ import pyautogui
 import os
 import easygui
 import sys
+import clipboard
+
+driver = webdriver.Chrome()
 
 xPath = easygui.diropenbox("Izaberi folder sa oglasom", "FOLDER", "C:\\")
 exPath = xPath + "\\main.xlsx"
 
 
 keyboard = Controller()
+#
 
-driver = webdriver.Chrome()
-keyboard.press(Key.f11)
-keyboard.release(Key.f11)
+# keyboard.press(Key.f11)
+# keyboard.release(Key.f11)
 
 
 #funkcija za interval
@@ -152,31 +155,42 @@ if vZamena != "/":
 #     el = self.driver.find_element_by_xpath(pOpis)
 #     el.send_keys(Keys.CONTROL, 'v')
 
-vOpis = excelSheet.cell(9,0).value
-interval()
 
-def addToClipBoard(text):
-    command = 'echo ' + text.strip() + '| clip'
-    os.system(command)
-addToClipBoard(vOpis)
+fOpis = open(xPath + "\\opis.txt", 'r+')
+vOpis = str(fOpis.read())
+print(vOpis)
 interval()
-
+clipboard.copy(vOpis)
 pOpis = driver.find_element_by_xpath("//iframe[@id='data[description]_ifr']")
 pOpis.click()
-
 with keyboard.pressed(Key.ctrl):
     keyboard.press('v')
 interval()
 
-pDugmeSledece = driver.find_element_by_xpath("//input[@action-name='adInfoNextButton']")
-driver.execute_script("arguments[0].click();", pDugmeSledece)
 
-# #IZABERI GRAD I TELEFON
-# telefon = "0616344878"
-# pGrad = uiMenuButtonOuter
+
+#IZABERI GRAD I TELEFON
+telefon = "0616344878"
+ime = "Nikola Radisic"
+# pGrad = driver.find_element_by_xpath(("//div[@action-name='choice-options-insert']"))
+# pGrad = driver.find_element_by_class_name("uiMenuButtonInner")
+# pGrad = driver.find_element_by_xpath("//span[contains(text(),'Izaberite')]")
+pGrad = driver.find_element_by_id("locationInsertSpot")
+driver.execute_script("arguments[0].click();", pGrad)
+pGrad.click()
+interval()
 # grad = driver.find_element_by_xpath("//div[@data-value='1']")
 
-
+# interval()
+# pBroj = driver.find_element_by_id("phone_number")
+# pBroj.send_keys(telefon)
+# interval()
+# pIme = driver.find_element_by_id("data[owner]")
+# pIme.send_keys(ime)
+# interval()
+#
+# pDugmeSledece = driver.find_element_by_xpath("//input[@action-name='adInfoNextButton']")
+# driver.execute_script("arguments[0].click();", pDugmeSledece)
 
 
 
