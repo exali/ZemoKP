@@ -197,28 +197,46 @@ def glavni():
         keyboard.press('v')
     interval()
 
+    #lista slika
+    slike = []
+
+    for root, dirs, files in os.walk(xPath):
+        for filename in files:
+            if filename.endswith(('.jpg', '.jpeg', '.gif', '.png')):
+                slike.append(filename)
+
+    pSlika = driver.find_element_by_xpath("//input[@id='upload_file']")
+
+    for slika in slike:
+        slika = xPath + "\\" + slika
+        pSlika.send_keys(slika)
+    interval(5)
+    driver.close()
+    sys.exit()
 
 
-    #IZABERI GRAD I TELEFON
-    telefon = "0616344878"
-    ime = "Nikola Radisic"
 
-    pGrad = driver.find_element_by_id("locationInsertSpot")
-    pGrad.click()
-    interval()
-    grad = driver.find_element_by_xpath("//div[@data-text='Beograd']")
-    driver.execute_script("arguments[0].click();", grad)
-    interval()
 
-    pIme = driver.find_element_by_id("data[owner]")
-    pIme.clear()
-    pIme.send_keys(ime)
+    # #IZABERI GRAD I TELEFON
+    # telefon = "0616344878"
+    # ime = "Nikola Radisic"
 
-    interval()
-    pBroj = driver.find_element_by_id("phone_number")
-    pBroj.send_keys(telefon)
-    dugmeSledece()
-    interval(1)
+    # pGrad = driver.find_element_by_id("locationInsertSpot")
+    # pGrad.click()
+    # interval()
+    # grad = driver.find_element_by_xpath("//div[@data-text='Beograd']")
+    # driver.execute_script("arguments[0].click();", grad)
+    # interval()
+    #
+    # pIme = driver.find_element_by_id("data[owner]")
+    # pIme.clear()
+    # pIme.send_keys(ime)
+    #
+    # interval()
+    # pBroj = driver.find_element_by_id("phone_number")
+    # pBroj.send_keys(telefon)
+    # dugmeSledece()
+    # interval(1)
 
     pVidljivost = driver.find_element_by_class_name("col-greedy")
     interval()
@@ -230,22 +248,22 @@ def glavni():
     driver.execute_script("arguments[0].click();", driver.find_element_by_xpath("//input[@action-name='adPromoNextButton']"))
     interval(1)
 
-    pVaseIme = driver.find_element_by_id("personEdit")
-    pVasePrezime = driver.find_element_by_id("personLastNameEdit")
-    pMesto = driver.find_element_by_name("data[d_person_location]")
-    pUliBroj = driver.find_element_by_name("data[d_person_address]")
-    pJMBG = driver.find_element_by_name("data[d_jmbg]")
-    pBrLK = driver.find_element_by_name("data[d_id_card_number]")
-    pIzdLK = driver.find_element_by_name("data[d_id_card_location]")
-
-    pVaseIme.send_keys("Nikola")
-    pVasePrezime.send_keys("Radisic")
-    pMesto.send_keys("Beograd")
-    pUliBroj.send_keys("Stare Porte 1")
-    pJMBG.send_keys("123453221")
-    pBrLK.send_keys("1235533")
-    pIzdLK.send_keys("Kragujevac")
-    interval()
+    # pVaseIme = driver.find_element_by_id("personEdit")
+    # pVasePrezime = driver.find_element_by_id("personLastNameEdit")
+    # pMesto = driver.find_element_by_name("data[d_person_location]")
+    # pUliBroj = driver.find_element_by_name("data[d_person_address]")
+    # pJMBG = driver.find_element_by_name("data[d_jmbg]")
+    # pBrLK = driver.find_element_by_name("data[d_id_card_number]")
+    # pIzdLK = driver.find_element_by_name("data[d_id_card_location]")
+    #
+    # pVaseIme.send_keys("Nikola")
+    # pVasePrezime.send_keys("Radisic")
+    # pMesto.send_keys("Beograd")
+    # pUliBroj.send_keys("Stare Porte 1")
+    # pJMBG.send_keys("123453221")
+    # pBrLK.send_keys("1235533")
+    # pIzdLK.send_keys("Kragujevac")
+    # interval()
 
     pDugmeGarant = driver.find_element_by_id("swear_yes")
     pDugmePrihvatam = driver.find_element_by_id("accept_yes")
