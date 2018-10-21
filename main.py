@@ -74,8 +74,6 @@ def glavni():
     interval()
 
     #DEFINISANJE KATEGORIJA
-    kategorije = {"kompjuterDesktop": driver.find_element_by_xpath("//div[@data-value='10']"),
-                  "kompjuterLaptop" : driver.find_element_by_xpath("//div[@data-value='1221']"),}
 
 
     #IZBOR KATEGORIJA
@@ -92,27 +90,23 @@ def glavni():
 
     #IZBOR GRUPA
     vGrupa = str(excelSheet.cell(2,0).value)
-    print(vGrupa)
-    if vKategorija == "kompjuterDesktop":
-        grupe = {"mrezniUredjaji": driver.find_element_by_xpath("//div[@data-value='105']"),
-                   "modemiRuteri": driver.find_element_by_xpath("//div[@data-value='95']"),
-                   "webKamere": driver.find_element_by_xpath("//div[@data-value='104']"),
-                 }
-    elif vKategorija == "kompjuterLaptop":
-        grupe = {"laptAdapt": driver.find_element_by_xpath("//div[@data-value='2285']"),
-                 "laptDOprema": driver.find_element_by_xpath("//div[@data-value='1235']"),
-                 }
-    else:
-        easygui.msgbox("PRAZNO/NETACNO POLJE SA KATEGORIJAMA")
-        sys.exit()
-
+    # print(vGrupa)
+    # if vKategorija == "kompjuterDesktop":
+    #     grupe = {"mrezniUredjaji": driver.find_element_by_xpath("//div[@data-value='105']"),
+    #                "modemiRuteri": driver.find_element_by_xpath("//div[@data-value='95']"),
+    #                "webKamere": driver.find_element_by_xpath("//div[@data-value='104']"),
+    #              }
+    # elif vKategorija == "kompjuterLaptop":
+    #     grupe = {"laptAdapt": driver.find_element_by_xpath("//div[@data-value='2285']"),
+    #              "laptDOprema": driver.find_element_by_xpath("//div[@data-value='1235']"),
+    #              }
+    # else:
+    #     easygui.msgbox("PRAZNO/NETACNO POLJE SA KATEGORIJAMA")
+    #     sys.exit()
     grupa = grupe[vGrupa]
     grupa.click()
     print("grupa :  " + str(grupa))
     time.sleep(1)
-
-
-
 
     #DEFINISANJE STANJA
     stanja = {"kaoNovo" : driver.find_element_by_id("data[condition]as-new"),
@@ -205,15 +199,13 @@ def glavni():
             if filename.endswith(('.jpg', '.jpeg', '.gif', '.png')):
                 slike.append(filename)
 
+    interval()
     pSlika = driver.find_element_by_xpath("//input[@id='upload_file']")
 
     for slika in slike:
         slika = xPath + "\\" + slika
         pSlika.send_keys(slika)
-    interval(5)
-    driver.close()
-    sys.exit()
-
+    interval(8)
 
 
 
