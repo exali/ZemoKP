@@ -9,17 +9,10 @@ import os
 import easygui
 import sys
 import clipboard
+import keyboard
 
-
-
-
-
-
-# options = webdriver.ChromeOptions()
-# options.add_argument("user-data-dir=C:\\Users\\stakic\\AppData\\Local\\Google\\Chrome\\User%20Data") #Path to your chrome profile
-# driver = webdriver.Chrome(chrome_options=options)
 # keyboard.press(Key.f11)
-# # keyboard.release(Key.f11)
+# keyboard.release(Key.f11)
 
 #funkcija za interval
 def interval(second=0.8):
@@ -39,25 +32,23 @@ def glavni():
     try:
         exPath = xPath + "\\main.xlsx"
         excel = xlrd.open_workbook(exPath)
-    except FileNotFoundError or TypeError:
+    except FileNotFoundError:
         print("NETACAN FOLDER")
         easygui.msgbox("NETACAN FOLDER, GASIM", "ERROR")
         sys.exit()
 
     global driver
-    driver = webdriver.Chrome("D:\\GIT_PROJEKTI\\chromedriver.exe")
+    driver = webdriver.Chrome("chromedriver.exe")
 
     driver.get('https://www.kupujemprodajem.com/user.php?action=login&return_url=MTM4MjExOTEx')
     email = driver.find_element_by_name("data[email]")
     password = driver.find_element_by_name("data[password]")
-    loginDugme = driver.find_element_by_name('submit[login]')
     interval()
-    email.send_keys("matijas.stakic@gmail.com")
+    email.send_keys("nradisic84@gmail.com")
     interval()
-    password.send_keys("matijacar123zy")
+    password.send_keys("nikola1984")
     password.send_keys(Keys.ENTER)
     interval()
-
 
 
     #ucitaj excel sheet
@@ -77,19 +68,18 @@ def glavni():
 
 
     #IZBOR KATEGORIJA
-    vKategorija = excelSheet.cell(1,0).value
-    kategorija = kategorije[vKategorija]
-    kategorija.click()
+    vKategorija = int(excelSheet.cell(1,0).value)
     vKategorija = str(vKategorija)
+    kategorija = driver.find_element_by_xpath("//div[@data-value='" + vKategorija + "']")
     interval()
-    print("kategorija : " + str(kategorija))
+    print(kategorija)
+    kategorija.click()
     interval()
-
     #DEFINISANJE GRUPA
 
 
     #IZBOR GRUPA
-    vGrupa = str(excelSheet.cell(2,0).value)
+    vGrupa = int(excelSheet.cell(2,0).value)
     # print(vGrupa)
     # if vKategorija == "kompjuterDesktop":
     #     grupe = {"mrezniUredjaji": driver.find_element_by_xpath("//div[@data-value='105']"),
@@ -103,8 +93,11 @@ def glavni():
     # else:
     #     easygui.msgbox("PRAZNO/NETACNO POLJE SA KATEGORIJAMA")
     #     sys.exit()
-    grupa = grupe[vGrupa]
+    vGrupa = str(vGrupa)
+    grupa = driver.find_element_by_xpath("//div[@data-value='" + vGrupa + "']")
     grupa.click()
+    # grupa = grupe[vGrupa]
+    # grupa.click()
     print("grupa :  " + str(grupa))
     time.sleep(1)
 
@@ -172,12 +165,6 @@ def glavni():
     if vZamena != "/":
         pZamena.click()
 
-    #KOPIRAJ OPIS
-    # def paste_keys(self, pOpis, vOpis):
-    #     os.system("echo %s| clip" % vOpis.strip())
-    #     el = self.driver.find_element_by_xpath(pOpis)
-    #     el.send_keys(Keys.CONTROL, 'v')
-
 
     fOpis = open(xPath + "\\opis.txt", 'r+')
     vOpis = str(fOpis.read())
@@ -205,57 +192,13 @@ def glavni():
     for slika in slike:
         slika = xPath + "\\" + slika
         pSlika.send_keys(slika)
-    interval(8)
-
-
-
-    # #IZABERI GRAD I TELEFON
-    # telefon = "0616344878"
-    # ime = "Nikola Radisic"
-
-    # pGrad = driver.find_element_by_id("locationInsertSpot")
-    # pGrad.click()
-    # interval()
-    # grad = driver.find_element_by_xpath("//div[@data-text='Beograd']")
-    # driver.execute_script("arguments[0].click();", grad)
-    # interval()
-    #
-    # pIme = driver.find_element_by_id("data[owner]")
-    # pIme.clear()
-    # pIme.send_keys(ime)
-    #
-    # interval()
-    # pBroj = driver.find_element_by_id("phone_number")
-    # pBroj.send_keys(telefon)
-    # dugmeSledece()
-    # interval(1)
-
-    pVidljivost = driver.find_element_by_class_name("col-greedy")
-    interval()
-    driver.execute_script("arguments[0].click();", pVidljivost)
-    print("yes")
-    interval(1)
-
+    interval(10)
 
     driver.execute_script("arguments[0].click();", driver.find_element_by_xpath("//input[@action-name='adPromoNextButton']"))
-    interval(1)
+    interval(2)
 
-    # pVaseIme = driver.find_element_by_id("personEdit")
-    # pVasePrezime = driver.find_element_by_id("personLastNameEdit")
-    # pMesto = driver.find_element_by_name("data[d_person_location]")
-    # pUliBroj = driver.find_element_by_name("data[d_person_address]")
-    # pJMBG = driver.find_element_by_name("data[d_jmbg]")
-    # pBrLK = driver.find_element_by_name("data[d_id_card_number]")
-    # pIzdLK = driver.find_element_by_name("data[d_id_card_location]")
-    #
-    # pVaseIme.send_keys("Nikola")
-    # pVasePrezime.send_keys("Radisic")
-    # pMesto.send_keys("Beograd")
-    # pUliBroj.send_keys("Stare Porte 1")
-    # pJMBG.send_keys("123453221")
-    # pBrLK.send_keys("1235533")
-    # pIzdLK.send_keys("Kragujevac")
-    # interval()
+    driver.execute_script("arguments[0].click();", driver.find_element_by_xpath("//input[@action-name='adPromoNextButton']"))
+    interval(2)
 
     pDugmeGarant = driver.find_element_by_id("swear_yes")
     pDugmePrihvatam = driver.find_element_by_id("accept_yes")
@@ -272,12 +215,11 @@ if izbor == 1:
 elif izbor == 0:
     driver.close()
     glavni()
+
+
+
 # pPostaviOglas = driver.find_element_by_name("submit[post]")
 # pPostaviOglas.click()
-
-# dugmeSubmit = driver.find_element_by_xpath("//input[@value=' Sledeće ']")
-# driver.execute_script("arguments[0].click();", dugmeSubmit)
-# interval()
 
 # time.sleep(5)
 # driver.close()
