@@ -1,5 +1,5 @@
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 import xlrd
 import time
 from pynput.keyboard import Key, Controller
@@ -11,8 +11,10 @@ import pickle
 
 # keyboard.press(Key.f11)
 # keyboard.release(Key.f11)
+options = webdriver.ChromeOptions()
+options.add_argument("user-data-dir=C:\\Users\\stakic\\AppData\\Local\\Google\\Chrome\\User Data\\")
 
-
+os.system('TASKKILL /F /IM chrome.exe')
 
 #funkcija za interval
 def interval(second=0.8):
@@ -37,19 +39,7 @@ def glavni():
         easygui.msgbox("NETACAN FOLDER, GASIM", "ERROR")
         sys.exit()
     global driver
-    driver = webdriver.Chrome("chromedriver.exe")
-    driver.get("https://www.google.com")
-    for cookie in pickle.load(open("cookies.pkl", "rb")):
-        driver.add_cookie(cookie)
-    driver.get('https://www.kupujemprodajem.com')
-    # driver.get('https://www.kupujemprodajem.com/user.php?action=login&data[remember]=0')
-    # email = driver.find_element_by_name("data[email]")
-    # password = driver.find_element_by_name("data[password]")
-    # interval()
-    # email.send_keys("nradisic84@gmail.com")
-    # interval()
-    # password.send_keys("nikola1984")
-    # password.send_keys(Keys.ENTER)
+    driver = webdriver.Chrome("D:\\GIT_PROJEKTI\\chromedriver.exe", options=options)
     interval()
     driver.get('https://www.kupujemprodajem.com/oglasi.php?action=new')
 
@@ -70,7 +60,7 @@ def glavni():
 
 
     #IZBOR KATEGORIJA
-    v_kategorija = int(excel_sheet.cell(1,0).value)
+    v_kategorija = int(excel_sheet.cell(0,0).value)
     v_kategorija = str(v_kategorija)
     kategorija = driver.find_element_by_xpath("//div[@data-value='" + v_kategorija + "']")
     interval()
@@ -81,7 +71,7 @@ def glavni():
 
 
     #IZBOR GRUPA
-    v_grupa = int(excel_sheet.cell(2,0).value)
+    v_grupa = int(excel_sheet.cell(1,0).value)
     print(v_grupa)
     v_grupa = str(v_grupa)
     grupa = driver.find_element_by_xpath("//div[@data-value='" + v_grupa + "']")
@@ -97,7 +87,7 @@ def glavni():
               "osteceno" : driver.find_element_by_id("data[condition]damaged"), }
 
     #IZBOR STANJA
-    v_stanje = excel_sheet.cell(3,0).value
+    v_stanje = excel_sheet.cell(2,0).value
     stanje = stanja[v_stanje]
     interval()
     stanje.click()
@@ -114,11 +104,11 @@ def glavni():
 
 
     #MENI ZA DOGOVOR, KONTAKT ETC.
-    v_dog = excel_sheet.cell(4,0).value
+    v_dog = excel_sheet.cell(3,0).value
     v_dog = str(v_dog)
     if v_dog == "/":
         #IZBOR CENE
-        v_cena = excel_sheet.cell(5,0).value
+        v_cena = excel_sheet.cell(4,0).value
         p_cena = driver.find_element_by_name("data[price]")
         p_cena.send_keys(int(v_cena))
         print("cena :  " + str(v_cena))
@@ -129,12 +119,12 @@ def glavni():
                   "din" : driver.find_element_by_id("currency_rsd"), }
 
         #IZBOR VALUTE
-        v_valuta = excel_sheet.cell(6,0).value
+        v_valuta = excel_sheet.cell(5,0).value
         p_valuta = valute[v_valuta]
         p_valuta.click()
 
         #IZBOR FIKSNO/NE
-        v_fiksno = excel_sheet.cell(7,0).value
+        v_fiksno = excel_sheet.cell(6,0).value
         v_fiksno = str(v_fiksno)
         p_fiksno = driver.find_element_by_id("data[price_fixed]")
         if v_fiksno == "fiksno":
@@ -151,9 +141,9 @@ def glavni():
         interval()
 
     #ZAMENA NE/DA
-    v_zamena = excel_sheet.cell(8,0).value
+    v_zamena = excel_sheet.cell(7,0).value
     p_zamena = driver.find_element_by_id("exchange_yes")
-    if v_zamena != "/":
+    if v_zamena == "zamena":
         p_zamena.click()
 
 
@@ -163,11 +153,12 @@ def glavni():
     interval()
     clipboard.copy(v_opis)
     p_opis = driver.find_element_by_xpath("//iframe[@id='data[description]_ifr']")
-    p_opis.click()
-    interval()
-    with keyboard.pressed(Key.ctrl):
-        keyboard.press('v')
-    interval()
+    driver.execute_script("arguments[0].click();", p_opis)
+    p_opis.send_keys(v_opis)
+    # interval()
+    # with keyboard.pressed(Key.ctrl):
+    #     keyboard.press('v')
+    # interval()
 
     #lista slika
     slike = []
@@ -198,7 +189,7 @@ def glavni():
     p_dugme_prihvatam.click()
 
 glavni()
-izbor = easygui.indexbox(msg='Nastaviti?', title=' ', choices=('Yes', 'No'), image=None, default_choice='Yes', cancel_choice='No')
+izbor = easygui.indexbox(msg='Nastaviti?', title=' ', choices=['Yes', 'No'], default_choice='Yes', cancel_choice='No')
 print(izbor)
 if izbor == 1:
     driver.close()
