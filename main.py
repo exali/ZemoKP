@@ -1,18 +1,18 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-import random
 import xlrd
 import time
 from pynput.keyboard import Key, Controller
-import pyautogui
 import os
 import easygui
 import sys
 import clipboard
-import keyboard
+import pickle
 
 # keyboard.press(Key.f11)
 # keyboard.release(Key.f11)
+
+
 
 #funkcija za interval
 def interval(second=0.8):
@@ -25,52 +25,54 @@ def dugmeSledece():
 
 
 def glavni():
-    xPath = easygui.diropenbox("Izaberi folder sa oglasom", "FOLDER", "D:\\GIT_PROJEKTI\\")
+    x_path = easygui.diropenbox("Izaberi folder sa oglasom", "FOLDER", "D:\\GIT_PROJEKTI\\")
 
     keyboard = Controller()
     #
     try:
-        exPath = xPath + "\\main.xlsx"
-        excel = xlrd.open_workbook(exPath)
+        ex_path = x_path + "\\main.xlsx"
+        excel = xlrd.open_workbook(ex_path)
     except FileNotFoundError:
         print("NETACAN FOLDER")
         easygui.msgbox("NETACAN FOLDER, GASIM", "ERROR")
         sys.exit()
-
     global driver
     driver = webdriver.Chrome("chromedriver.exe")
-
-    driver.get('https://www.kupujemprodajem.com/user.php?action=login&return_url=MTM4MjExOTEx')
-    email = driver.find_element_by_name("data[email]")
-    password = driver.find_element_by_name("data[password]")
+    driver.get("https://www.google.com")
+    for cookie in pickle.load(open("cookies.pkl", "rb")):
+        driver.add_cookie(cookie)
+    driver.get('https://www.kupujemprodajem.com')
+    # driver.get('https://www.kupujemprodajem.com/user.php?action=login&data[remember]=0')
+    # email = driver.find_element_by_name("data[email]")
+    # password = driver.find_element_by_name("data[password]")
+    # interval()
+    # email.send_keys("nradisic84@gmail.com")
+    # interval()
+    # password.send_keys("nikola1984")
+    # password.send_keys(Keys.ENTER)
     interval()
-    email.send_keys("nradisic84@gmail.com")
-    interval()
-    password.send_keys("nikola1984")
-    password.send_keys(Keys.ENTER)
-    interval()
-
+    driver.get('https://www.kupujemprodajem.com/oglasi.php?action=new')
 
     #ucitaj excel sheet
-    excelSheet = excel.sheet_by_index(0)
+    excel_sheet = excel.sheet_by_index(0)
 
-    predmetOglasa = excelSheet.cell(0,0).value
-    pPredmetOglasa = driver.find_element_by_id("data[group_suggest_text]")
+    predmet_oglasa = os.path.basename(x_path)
+    p_predmet_oglasa = driver.find_element_by_id("data[group_suggest_text]")
     interval()
-    pPredmetOglasa.send_keys(predmetOglasa)
+    p_predmet_oglasa.send_keys(predmet_oglasa)
     interval()
 
-    pStvar = driver.find_element_by_id('data[ad_kind]goods')
-    pStvar.click()
+    p_stvar = driver.find_element_by_id('data[ad_kind]goods')
+    p_stvar.click()
     interval()
 
     #DEFINISANJE KATEGORIJA
 
 
     #IZBOR KATEGORIJA
-    vKategorija = int(excelSheet.cell(1,0).value)
-    vKategorija = str(vKategorija)
-    kategorija = driver.find_element_by_xpath("//div[@data-value='" + vKategorija + "']")
+    v_kategorija = int(excel_sheet.cell(1,0).value)
+    v_kategorija = str(v_kategorija)
+    kategorija = driver.find_element_by_xpath("//div[@data-value='" + v_kategorija + "']")
     interval()
     print(kategorija)
     kategorija.click()
@@ -79,27 +81,15 @@ def glavni():
 
 
     #IZBOR GRUPA
-    vGrupa = int(excelSheet.cell(2,0).value)
-    # print(vGrupa)
-    # if vKategorija == "kompjuterDesktop":
-    #     grupe = {"mrezniUredjaji": driver.find_element_by_xpath("//div[@data-value='105']"),
-    #                "modemiRuteri": driver.find_element_by_xpath("//div[@data-value='95']"),
-    #                "webKamere": driver.find_element_by_xpath("//div[@data-value='104']"),
-    #              }
-    # elif vKategorija == "kompjuterLaptop":
-    #     grupe = {"laptAdapt": driver.find_element_by_xpath("//div[@data-value='2285']"),
-    #              "laptDOprema": driver.find_element_by_xpath("//div[@data-value='1235']"),
-    #              }
-    # else:
-    #     easygui.msgbox("PRAZNO/NETACNO POLJE SA KATEGORIJAMA")
-    #     sys.exit()
-    vGrupa = str(vGrupa)
-    grupa = driver.find_element_by_xpath("//div[@data-value='" + vGrupa + "']")
+    v_grupa = int(excel_sheet.cell(2,0).value)
+    print(v_grupa)
+    v_grupa = str(v_grupa)
+    grupa = driver.find_element_by_xpath("//div[@data-value='" + v_grupa + "']")
     grupa.click()
-    # grupa = grupe[vGrupa]
+    # grupa = grupe[v_grupa]
     # grupa.click()
     print("grupa :  " + str(grupa))
-    time.sleep(1)
+    interval(1)
 
     #DEFINISANJE STANJA
     stanja = {"kaoNovo" : driver.find_element_by_id("data[condition]as-new"),
@@ -107,8 +97,9 @@ def glavni():
               "osteceno" : driver.find_element_by_id("data[condition]damaged"), }
 
     #IZBOR STANJA
-    vStanje = excelSheet.cell(3,0).value
-    stanje = stanja[vStanje]
+    v_stanje = excel_sheet.cell(3,0).value
+    stanje = stanja[v_stanje]
+    interval()
     stanje.click()
     print("stanje :  " + str(stanje))
     interval()
@@ -123,14 +114,14 @@ def glavni():
 
 
     #MENI ZA DOGOVOR, KONTAKT ETC.
-    vDog = excelSheet.cell(4,0).value
-    vDog = str(vDog)
-    if vDog == "/":
+    v_dog = excel_sheet.cell(4,0).value
+    v_dog = str(v_dog)
+    if v_dog == "/":
         #IZBOR CENE
-        vCena = excelSheet.cell(5,0).value
-        pCena = driver.find_element_by_name("data[price]")
-        pCena.send_keys(int(vCena))
-        print("cena :  " + str(vCena))
+        v_cena = excel_sheet.cell(5,0).value
+        p_cena = driver.find_element_by_name("data[price]")
+        p_cena.send_keys(int(v_cena))
+        print("cena :  " + str(v_cena))
         interval()
 
         #DEFINISANJE VALUTE
@@ -138,41 +129,41 @@ def glavni():
                   "din" : driver.find_element_by_id("currency_rsd"), }
 
         #IZBOR VALUTE
-        vValuta = excelSheet.cell(6,0).value
-        pValuta = valute[vValuta]
-        pValuta.click()
+        v_valuta = excel_sheet.cell(6,0).value
+        p_valuta = valute[v_valuta]
+        p_valuta.click()
 
         #IZBOR FIKSNO/NE
-        vFiksno = excelSheet.cell(7,0).value
-        vFiksno = str(vFiksno)
-        pFiksno = driver.find_element_by_id("data[price_fixed]")
-        if vFiksno == "fiksno":
-            pFiksno.click()
+        v_fiksno = excel_sheet.cell(7,0).value
+        v_fiksno = str(v_fiksno)
+        p_fiksno = driver.find_element_by_id("data[price_fixed]")
+        if v_fiksno == "fiksno":
+            p_fiksno.click()
     else:
-        pDogMeni = driver.find_element_by_xpath("//span[contains(text(),'Ili umesto cene')]")
-        pDogMeni.click()
+        p_dog_meni = driver.find_element_by_xpath("//span[contains(text(),'Ili umesto cene')]")
+        p_dog_meni.click()
         dogMeniIzbor = {"dogovor" : driver.find_element_by_xpath("//div[@data-value='Dogovor']"),
                         "kontakt" : driver.find_element_by_xpath("//div[@data-value='Kontakt']"),
                         "pozvati" : driver.find_element_by_xpath("//div[@data-value='Pozvati']"), }
-        dog = dogMeniIzbor[vDog]
+        dog = dogMeniIzbor[v_dog]
         dog.click()
         print("dog :  " + str(dog))
         interval()
 
     #ZAMENA NE/DA
-    vZamena = excelSheet.cell(8,0).value
-    pZamena = driver.find_element_by_id("exchange_yes")
-    if vZamena != "/":
-        pZamena.click()
+    v_zamena = excel_sheet.cell(8,0).value
+    p_zamena = driver.find_element_by_id("exchange_yes")
+    if v_zamena != "/":
+        p_zamena.click()
 
 
-    fOpis = open(xPath + "\\opis.txt", 'r+')
-    vOpis = str(fOpis.read())
-    print(vOpis)
+    f_opis = open(x_path + "\\opis.txt", 'r+')
+    v_opis = str(f_opis.read())
+    print(v_opis)
     interval()
-    clipboard.copy(vOpis)
-    pOpis = driver.find_element_by_xpath("//iframe[@id='data[description]_ifr']")
-    pOpis.click()
+    clipboard.copy(v_opis)
+    p_opis = driver.find_element_by_xpath("//iframe[@id='data[description]_ifr']")
+    p_opis.click()
     interval()
     with keyboard.pressed(Key.ctrl):
         keyboard.press('v')
@@ -181,17 +172,17 @@ def glavni():
     #lista slika
     slike = []
 
-    for root, dirs, files in os.walk(xPath):
+    for root, dirs, files in os.walk(x_path):
         for filename in files:
             if filename.endswith(('.jpg', '.jpeg', '.gif', '.png')):
                 slike.append(filename)
 
     interval()
-    pSlika = driver.find_element_by_xpath("//input[@id='upload_file']")
+    p_slika = driver.find_element_by_xpath("//input[@id='upload_file']")
 
     for slika in slike:
-        slika = xPath + "\\" + slika
-        pSlika.send_keys(slika)
+        slika = x_path + "\\" + slika
+        p_slika.send_keys(slika)
     interval(10)
 
     driver.execute_script("arguments[0].click();", driver.find_element_by_xpath("//input[@action-name='adPromoNextButton']"))
@@ -200,11 +191,11 @@ def glavni():
     driver.execute_script("arguments[0].click();", driver.find_element_by_xpath("//input[@action-name='adPromoNextButton']"))
     interval(2)
 
-    pDugmeGarant = driver.find_element_by_id("swear_yes")
-    pDugmePrihvatam = driver.find_element_by_id("accept_yes")
+    p_dugme_garant = driver.find_element_by_id("swear_yes")
+    p_dugme_prihvatam = driver.find_element_by_id("accept_yes")
 
-    pDugmeGarant.click()
-    pDugmePrihvatam.click()
+    p_dugme_garant.click()
+    p_dugme_prihvatam.click()
 
 glavni()
 izbor = easygui.indexbox(msg='Nastaviti?', title=' ', choices=('Yes', 'No'), image=None, default_choice='Yes', cancel_choice='No')
