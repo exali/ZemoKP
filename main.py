@@ -1,13 +1,11 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 import xlrd
 import time
-from pynput.keyboard import Key, Controller
+from pynput.keyboard import Controller
 import os
 import easygui
 import sys
 import clipboard
-import pickle
 
 # keyboard.press(Key.f11)
 # keyboard.release(Key.f11)
