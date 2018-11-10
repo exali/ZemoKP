@@ -61,7 +61,7 @@ def ispisi():
     file.close()
 
     odluka_box = gui.buttonbox(msg="Potvrdi:", choices=["Ponovi oglas", "Nastavi drugi oglas"])
-    if odluka_box == "Nastavi drugi oglas":
+    if odluka_box == 1:
         # write to excel
 
         workbook = xlsxwriter.Workbook(path_oglasa + '\\main.xlsx')
@@ -71,9 +71,9 @@ def ispisi():
             worksheet.write(row, 0, vrednost)
             row += 1
         workbook.close()
-        main(True)
-    elif odluka_box == "Ponovi oglas":
-        main(False)
+        ponoviOglas(False)
+    elif odluka_box == 0:
+        ponoviOglas(True)
 
 def kreiraj(path_oglasa):
     global file
@@ -97,7 +97,7 @@ def kreiraj(path_oglasa):
 
     # DODAJ INPUT ZA XLSX FAJL (0,0)
 
-    grupa_choice = gui.choicebox(msg="Izaberi grupu", choices=grupe_imena)
+    grupa_choice = gui.choicebox(msg="Izaberi grupu", choices=grupe_imena, title=predmet_oglasa)
     grupa_choice_value = grupe_dict[grupa_choice]
 
     print(grupa_choice)
@@ -105,7 +105,7 @@ def kreiraj(path_oglasa):
 
     # DODAJ INPUT ZA XLSX FAJL (1,0)
 
-    stanje_choice = gui.choicebox(msg="Izaberi stanje", choices=stanja)
+    stanje_choice = gui.choicebox(msg="Izaberi stanje", choices=stanja, title=predmet_oglasa)
 
     print(stanje_choice)
 
@@ -115,28 +115,28 @@ def kreiraj(path_oglasa):
     file.write(opis_tekst)
     file.close()
 
-    dog_choice = gui.choicebox(msg="Dogovor/kontakt/pozvati", choices=dog_izbori)
+    dog_choice = gui.choicebox(msg="Dogovor/kontakt/pozvati", choices=dog_izbori, title=predmet_oglasa)
 
     print(dog_choice)
     # DODAJ INPUT ZA XLSX FAJL (3,0)
 
     if dog_choice == "/":
         cena_choice = gui.enterbox(msg="Cena:")
-        valuta_choice = gui.choicebox(msg="Valuta:", choices=valute_izbori)
-        fiksno_choice = gui.buttonbox(msg="Fiksno?", choices=fiksno_izbori)
-        zamena_choice = gui.buttonbox(msg="Zamena?", choices=zamena_izbori)
+        valuta_choice = gui.choicebox(msg="Valuta:", choices=valute_izbori, title=predmet_oglasa)
+        fiksno_choice = gui.buttonbox(msg="Fiksno?", choices=fiksno_izbori, title=predmet_oglasa)
+        zamena_choice = gui.buttonbox(msg="Zamena?", choices=zamena_izbori, title=predmet_oglasa)
         print(cena_choice)
         print(valuta_choice)
         print(fiksno_choice)
         poslednja_provera = [kat_choice, grupa_choice, stanje_choice, opis_tekst, cena_choice, valuta_choice,
                              fiksno_choice, zamena_choice]
     else:
-        zamena_choice = gui.buttonbox(msg="Zamena?", choices=zamena_izbori)
+        zamena_choice = gui.buttonbox(msg="Zamena?", choices=zamena_izbori, title=predmet_oglasa)
         poslednja_provera = [kat_choice, grupa_choice, stanje_choice, opis_tekst, dog_choice, zamena_choice]
 
     print(zamena_choice)
     poslednja_provera = '\n'.join(poslednja_provera)
-    poslednji_box = gui.textbox(msg="proveri podatke:", text=(poslednja_provera))
+    poslednji_box = gui.textbox(msg="proveri podatke:", text=poslednja_provera, title=predmet_oglasa)
 
 def main(repeat):
 
@@ -150,25 +150,30 @@ def main(repeat):
     path_oglasi_folder = gui.diropenbox("Izaberi folder sa oglasima", "FOLDER", "C:\\Users\\stakic\\Desktop\\SAV_XLSX\\")
     svi_oglasi = os.listdir(path_oglasi_folder)
     izabrani_oglasi = gui.multchoicebox(msg="Izaberi sve oglase koje zelis da kreiras:", choices=svi_oglasi)
+    pisi_oglase = '\n'.join(izabrani_oglasi)
+    print(izabrani_oglasi)
+    gui.textbox(msg="Proveri izabrane oglase:", text=pisi_oglase)
+    nastavi_box = gui.ccbox(msg="Nastavi?", choices=["Da", "Ne"])
+    while nastavi_box == False:
+        main(True)
+    if repeat == False:
+        ponoviOglas(False)
 
-    trenutni_index = 0
+
+def ponoviOglas(repeat):
+    global path_oglasa
     for oglas in izabrani_oglasi:
         path_oglasa = path_oglasi_folder + "\\" + oglas
-        kreiraj(path_oglasa)
-        ispisi()
+        if repeat == False:
+            kreiraj(path_oglasa)
+            ispisi()
         if repeat == True:
-            trenutni_index += 1
-            pass
-        elif repeat == False:
-            pass
+            while repeat == True:
+                kreiraj(path_oglasa)
+                ispisi()
 
 
-
-
-        
-
-
-main()
+main(False)
 
 
 
