@@ -1,70 +1,40 @@
-import os
-import sys
-import xlsxwriter
-import time
-from bs4 import BeautifulSoup as BS
+import re
+from bs4 import BeautifulSoup as bs
+import urllib.request
+import unicodecsv as csv
 
-xPath = 'C:\\Users\\stakic\\Desktop\\SAV_HTML'
+response = urllib.request.urlopen("https://nikolaradisic.kpizlog.rs/")
+html = response.read()
 
-htmls = []
+soup = bs(html, 'html.parser')
 
-
-def extractKeys():
-    global row
-    global col
-    row = 0
-    col = 0
-    for key in SVE.keys():
-        worksheet.write(row, col, key)
-        row += 1
+def main(vrsta):
+    print(type(soup))
 
 
-def extractValues():
-    row = 0
-    col = 3
+    cigan = soup.find_all(href=re.compile(vrsta), text=True)
 
-    for value in SVE.values():
-        worksheet.write(row, col, value)
-        row += 1
+    lista = []
+    for da in cigan:
+        print(da.text)
+        lista.append(da.text)
 
+    print(lista)
 
-for root, dirs, files in os.walk(xPath):
-    for filename in files:
-        if filename.endswith('.html'):
-            htmls.append(filename)
+    bosko = csv.list_dialects()
+    print(bosko)
 
-htmlPaths = []
-for html in htmls:
-    html = xPath + "\\" + html
-    htmlPaths.append(html)
+    with open("C:\\Users\\stakic\\Desktop\\SAV_HTML\\%s.txt" %(vrsta), "w+", encoding="utf-8") as file:
+        for naziv in lista:
+            file.write(naziv + "\n")
 
-print(htmlPaths)
-time.sleep(2)
+    file = open("C:\\Users\\stakic\\Desktop\\SAV_HTML\\%s.txt" %(vrsta), "r", encoding="utf-8")
+    lines = file.read().splitlines()
 
-savTekst = []
-savValue = []
+    print(lines)
 
-counter = 0
-for path in htmlPaths:
-
-    soup = BS(open(path, encoding='utf-8'),'html.parser')
-    for div in soup.findAll('div', class_='uiMenuItem'):
-        # print(str(div.get('data-text')) + "   " +str(div.get('data-value')))
-        data_tekst = str(div.get('data-text'))
-        savTekst.append(data_tekst)
-
-        data_value = str(div.get('data-value'))
-        savValue.append(data_value)
-    SVE = dict(zip(savTekst, savValue))
-    print(SVE)
-
-    workbook = xlsxwriter.Workbook("C:\\Users\\stakic\\Desktop\\SAV_XLSX\\cigan2.xlsx")
-    worksheet = workbook.add_worksheet()
-
-
-    extractValues()
-    extractKeys()
-    workbook.close()
+main("kategorija")
+main("grupa")
 
 
 
